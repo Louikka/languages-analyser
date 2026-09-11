@@ -1,12 +1,11 @@
 package main
 
 import (
-	"cmp"
 	"flag"
 	"fmt"
-	"lan/languages"
 	"log"
-	"slices"
+	"path/filepath"
+	"time"
 )
 
 type ProgramFlags struct {
@@ -27,21 +26,32 @@ func initPropgramFlags() *ProgramFlags {
 func main() {
 	flags := initPropgramFlags()
 
-	l := languages.NewLanguages()
+	startupTime := time.Now()
 
-	err := ScanDirectory(flags.d, &l)
+	dAbs, err := filepath.Abs(flags.d)
 	if err != nil {
-		log.Fatalf("Failed to scan directory: %s", err)
+		log.Fatalf("Failed to convert target to absolute path: %s", err)
 	}
 
-	totalWeight := l.GetTotalWeight()
+	fmt.Printf("Scanning %s...", dAbs)
 
-	slices.SortFunc(l.Collection, func(a, b languages.LanguageStats) int {
-		return cmp.Compare(b.Weigth, a.Weigth)
-	})
+	scanner := NewScanner()
 
-	for _, lang := range l.Collection {
-		percentage := float64(lang.Weigth) / float64(totalWeight) * 100.0
-		fmt.Printf("%.1f%%\t%d\t%s\n", percentage, lang.Weigth, lang.Definition.Name)
+	err = scanner.ScanDirectory(dAbs)
+	if err != nil {
+		log.Fatalf("\n\nFailed to scan directory: %s", err)
 	}
+
+	totalWeight := scanner.GetTotalWeight()
+	scanner.Sort()
+
+	fmt.Print("\n\n")
+
+	for _, lang := range scanner.Entries {
+		percentage := float64(lang.Weight) / float64(totalWeight) * 100.0
+		fmt.Printf("%.1f%%\t%d\t%s\n", percentage, lang.Weight, lang.Definition.Name)
+	}
+
+	elapsed := time.Since(startupTime)
+	fmt.Printf("\nExecution time: %fs\n", elapsed.Seconds())
 }
