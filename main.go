@@ -1,55 +1,63 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"lan/flags"
+	"lan/lib"
+	"lan/scanner"
 	"log"
-	"path/filepath"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
-type ProgramFlags struct {
-	// Directory where to perform analysis.
-	d string
-}
-
-func initPropgramFlags() *ProgramFlags {
-	d := flag.String("d", ".", "directory where to perform analysis")
-
-	flag.Parse()
-
-	return &ProgramFlags{
-		d: *d,
-	}
-}
-
 func main() {
-	flags := initPropgramFlags()
+	f, err := flags.InitPropgramFlags()
+	if err != nil {
+		log.Fatalf("Error parsing program flags: %s\n", err)
+	}
 
 	startupTime := time.Now()
 
-	dAbs, err := filepath.Abs(flags.d)
+	fmt.Printf("Scanning %s...\n", f.Root)
+
+	dirEntries, err := lib.ScanDirectory(f.Root)
 	if err != nil {
-		log.Fatalf("Failed to convert target to absolute path: %s", err)
+		log.Fatalf("Error scanning directory: %s\n", err)
 	}
 
-	fmt.Printf("Scanning %s...", dAbs)
+	fmt.Printf("Analysing files...\n")
 
-	scanner := NewScanner()
+	errg := new(errgroup.Group)
 
-	err = scanner.ScanDirectory(dAbs)
-	if err != nil {
-		log.Fatalf("\n\nFailed to scan directory: %s", err)
+	scanner := scanner.Init()
+
+	for _, path := range dirEntries {
+		// check if path goes into the exluded directory
+		if lib.HasAnyOfPrefixes(path, f.Ignore) {
+			continue
+		}
+
+		errg.Go(func() error {
+			return scanner.Scan(path)
+		})
 	}
 
-	totalWeight := scanner.GetTotalWeight()
-	scanner.Sort()
+	err = errg.Wait()
+	if err != nil {
+		log.Fatalf("Error: %s\n", err)
+	}
 
-	fmt.Print("\n\n")
+	totalWeight := scanner.TotalWeight()
+	scanner.SortEntries()
 
-	for _, lang := range scanner.Entries {
-		percentage := float64(lang.Weight) / float64(totalWeight) * 100.0
-		fmt.Printf("%.1f%%\t%d\t%s\n", percentage, lang.Weight, lang.Definition.Name)
+	fmt.Print("\n")
+
+	for _, e := range scanner.Entries {
+		if e.Weight > 0 {
+			percentage := float64(e.Weight) / float64(totalWeight) * 100.0
+			fmt.Printf("%.1f%%\t%d\t%s\n", percentage, e.Weight, e.Name)
+		}
 	}
 
 	elapsed := time.Since(startupTime)

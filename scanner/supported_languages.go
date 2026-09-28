@@ -1,9 +1,4 @@
-package main
-
-import (
-	"errors"
-	"slices"
-)
+package scanner
 
 type LanguageDefinition struct {
 	// Name of the language (e.g. "Go", "Typescript", "C#", etc.).
@@ -20,6 +15,14 @@ type LanguageDefinition struct {
 // TODO(everyone): add more language definitions.
 var SUPPORTED_LANGUAGES = []LanguageDefinition{
 	{
+		Name:    "Pascal",
+		Matches: []string{".pas"},
+	},
+	{
+		Name:    "Fortran",
+		Matches: []string{".f90", ".ftn"},
+	},
+	{
 		Name:    "C",
 		Matches: []string{".c", ".h"},
 	},
@@ -28,8 +31,24 @@ var SUPPORTED_LANGUAGES = []LanguageDefinition{
 		Matches: []string{".cpp", ".cc", ".cxx", ".c++", ".hpp", ".hxx"},
 	},
 	{
+		Name:    "Objective-C",
+		Matches: []string{".m"},
+	},
+	{
+		Name:    "Objective-C++",
+		Matches: []string{".mm"},
+	},
+	{
+		Name:    "C#",
+		Matches: []string{".cs"},
+	},
+	{
 		Name:    "C3",
 		Matches: []string{".c3"},
+	},
+	{
+		Name:    "D",
+		Matches: []string{".d"},
 	},
 	{
 		Name:    "Rust",
@@ -46,6 +65,22 @@ var SUPPORTED_LANGUAGES = []LanguageDefinition{
 	{
 		Name:    "Go",
 		Matches: []string{".go"},
+	},
+	{
+		Name:    "Dart",
+		Matches: []string{".dart"},
+	},
+	{
+		Name:    "Swift",
+		Matches: []string{".swift"},
+	},
+	{
+		Name:    "Haskell",
+		Matches: []string{".hs"},
+	},
+	{
+		Name:    "PHP",
+		Matches: []string{".php"},
 	},
 	{
 		Name:    "JavaScript",
@@ -91,20 +126,4 @@ var SUPPORTED_LANGUAGES = []LanguageDefinition{
 		Name:    "CMake",
 		Matches: []string{".cmake", "CMakeLists.txt"},
 	},
-}
-
-// Source language is not supported (yet). See [SUPPORTED_LANGUAGES].
-var ErrNotSupported = errors.New("source language is not supported")
-
-// Checks if source file supported (`match` should be an extension or specific
-// file, see [SourceLanguageDefinition] for more information). Also returns its
-// definition (if supported).
-func IsSupported(match string) (LanguageDefinition, bool) {
-	for _, lang := range SUPPORTED_LANGUAGES {
-		if slices.Contains(lang.Matches, match) {
-			return lang, true
-		}
-	}
-
-	return LanguageDefinition{}, false
 }
