@@ -6,4 +6,3 @@ Similar to [GitHub Linguist](https://github.com/github-linguist/linguist), this 
 ## ToDo
 
 - Add more languages.
-- Add support for ignore-files (gitignore, etc.?) to produce more accurate results.
