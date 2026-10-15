@@ -15,6 +15,10 @@ type LanguageDefinition struct {
 // TODO(everyone): add more language definitions.
 var SUPPORTED_LANGUAGES = []LanguageDefinition{
 	{
+		Name:    "Assembly",
+		Matches: []string{".asm"},
+	},
+	{
 		Name:    "Pascal",
 		Matches: []string{".pas"},
 	},
