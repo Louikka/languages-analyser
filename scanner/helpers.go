@@ -12,7 +12,7 @@ import (
 func countCharsInFile(path string) (int, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return 0, fmt.Errorf("failed to open a file: %s", err)
+		return 0, fmt.Errorf("failed to open %q: %s", path, err)
 	}
 
 	defer f.Close()

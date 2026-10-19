@@ -1,0 +1,75 @@
+[
+  {
+    "name": "Assembly",
+    "matches": [
+      "*.asm"
+    ]
+  },
+  {
+    "name": "C",
+    "matches": [
+      "*.c"
+    ]
+  },
+  {
+    "name": "C++",
+    "matches": [
+      "*.cpp",
+      "*.cxx",
+      "*.c++",
+      "*.cc"
+    ]
+  },
+  {
+    "name": "C/C++ Header",
+    "matches": [
+      "*.h"
+    ]
+  },
+  {
+    "name": "C++ Header",
+    "matches": [
+      "*.hpp",
+      "*.hxx",
+      "*.h++"
+    ]
+  },
+  {
+    "name": "Objective-C",
+    "matches": [
+      "*.m"
+    ]
+  },
+  {
+    "name": "Objective-C++",
+    "matches": [
+      "*.mm"
+    ]
+  },
+  {
+    "name": "Go",
+    "matches": [
+      "*.go"
+    ]
+  },
+  {
+    "name": "JavaScript",
+    "matches": [
+      "*.js",
+      "*.[cm]js"
+    ]
+  },
+  {
+    "name": "TypeScript Type Definitions",
+    "matches": [
+      "*.d.ts"
+    ]
+  },
+  {
+    "name": "TypeScript",
+    "matches": [
+      "*.ts",
+      "*.[cm]ts"
+    ]
+  }
+]

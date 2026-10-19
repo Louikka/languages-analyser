@@ -1,26 +1,28 @@
 package lib
 
-import "strings"
+import (
+	"path/filepath"
+	"strings"
+)
 
-// Reports whether the string s begins with any of the prefixes.
-func HasAnyOfPrefixes(s string, prefixes []string) bool {
-	for _, p := range prefixes {
-		if strings.HasPrefix(s, p) {
-			return true
-		}
+func IsSubPath(parent, child string) (bool, error) {
+	p, err := filepath.Abs(parent)
+	if err != nil {
+		return false, err
 	}
 
-	return false
-}
-
-func Filter[T any](slice []T, fn func(T) bool) []T {
-	var r []T
-
-	for _, v := range slice {
-		if fn(v) {
-			r = append(r, v)
-		}
+	c, err := filepath.Abs(child)
+	if err != nil {
+		return false, err
 	}
 
-	return r
+	rel, err := filepath.Rel(p, c)
+	if err != nil {
+		return false, err
+	}
+
+	// if rel starts with ".", then there is either no difference between
+	// paths (".") or child path is not a subpath of the parent ("..",
+	// "../..", etc.)
+	return !strings.HasPrefix(rel, "."), nil
 }

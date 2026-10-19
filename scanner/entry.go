@@ -1,11 +1,12 @@
 package scanner
 
 import (
+	"lan/languages"
 	"sync"
 )
 
 type Entry struct {
-	LanguageDefinition
+	languages.LanguageDefinition
 
 	mutex sync.Mutex
 
@@ -14,15 +15,24 @@ type Entry struct {
 	Weight int
 }
 
-func EntryFromDefinition(ld LanguageDefinition) *Entry {
+// Scans specified file.
+func (e *Entry) Scan(path string) error {
+	count, err := countCharsInFile(path)
+	if err != nil {
+		return err
+	}
+
+	e.mutex.Lock()
+
+	e.Weight += count
+
+	e.mutex.Unlock()
+
+	return nil
+}
+
+func EntryFromDefinition(ld languages.LanguageDefinition) *Entry {
 	return &Entry{
 		LanguageDefinition: ld,
 	}
-}
-
-// Locks mutex, adds weight, then unlocks mutex.
-func (e *Entry) AddWeight(n int) {
-	e.mutex.Lock()
-	e.Weight += n
-	e.mutex.Unlock()
 }

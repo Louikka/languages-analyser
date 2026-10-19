@@ -2,18 +2,19 @@ package scanner
 
 import (
 	"cmp"
+	"lan/languages"
+	"path/filepath"
 	"slices"
-	"strings"
 )
 
 type Scanner struct {
 	Entries []*Entry
 }
 
-func Init() Scanner {
+func NewScanner(lds []languages.LanguageDefinition) Scanner {
 	var es = []*Entry{}
 
-	for _, ld := range SUPPORTED_LANGUAGES {
+	for _, ld := range lds {
 		e := EntryFromDefinition(ld)
 		es = append(es, e)
 	}
@@ -23,33 +24,37 @@ func Init() Scanner {
 	}
 }
 
-// Finds language entry from path.
-func (s Scanner) Find(path string) (*Entry, bool) {
+// Finds language entry that matches specified filename. If no entry was
+// found, returns [languages.ErrNotSupported] error.
+func (s Scanner) Find(name string) (*Entry, error) {
 	for _, e := range s.Entries {
 		for _, match := range e.Matches {
-			if strings.HasSuffix(path, match) {
-				return e, true
+			matched, err := filepath.Match(match, name)
+			if err != nil {
+				return nil, err
+			}
+			if matched {
+				return e, nil
 			}
 		}
 	}
 
-	return nil, false
+	return nil, languages.ErrNotSupported
 }
 
-// Checks if source file is supported, and if it is, scans specified file and
-// adds its weight to the entry.
+// Checks if source file is supported, and if it is, scans it.
 func (s Scanner) Scan(path string) error {
-	e, ok := s.Find(path)
-	if ok {
-		count, err := countCharsInFile(path)
-		if err != nil {
-			return err
+	e, err := s.Find(filepath.Base(path))
+	if err != nil {
+		// skip if language is not supported
+		if err == languages.ErrNotSupported {
+			return nil
 		}
 
-		e.AddWeight(count)
+		return err
 	}
 
-	return nil
+	return e.Scan(path)
 }
 
 // Sorts [Scanner.Entries] by weight (in descending order) in place.

@@ -17,7 +17,7 @@ type ProgramFlags struct {
 	Ignore []string
 }
 
-func InitPropgramFlags() (ProgramFlags, error) {
+func Init() (ProgramFlags, error) {
 	ignore := flag.StringP(
 		"ignore",
 		"i",
