@@ -75,14 +75,14 @@ func main() {
 
 	fmt.Printf("Analysing files...\n")
 
-	errg := new(errgroup.Group)
 	sc := scanner.NewScanner(lds)
+	errg := new(errgroup.Group)
 
 	for _, path := range files {
 		// check if path goes into the exluded directory
 		ignore, err := isIgnored(path, fl.Ignore)
 		if err != nil {
-			log.Fatalf("%s\n", err)
+			log.Fatalf("Error: %s\n", err)
 		}
 		if ignore {
 			continue
