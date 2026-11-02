@@ -21,5 +21,5 @@ $ lan [root_directory] [options]
 
 ## ToDo
 
-- Add different metrics (such as lines of code, etc.).
+- Add different metrics (such as lines of code, etc.) -> update: prettify displaying info in terminal.
 - Add more languages.
