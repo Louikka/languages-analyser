@@ -23,12 +23,7 @@
   {
     "name": "C/C++ Header",
     "matches": [
-      "*.h"
-    ]
-  },
-  {
-    "name": "C++ Header",
-    "matches": [
+      "*.h",
       "*.hpp",
       "*.hxx",
       "*.h++"
@@ -57,12 +52,6 @@
     "matches": [
       "*.js",
       "*.[cm]js"
-    ]
-  },
-  {
-    "name": "TypeScript Type Definitions",
-    "matches": [
-      "*.d.ts"
     ]
   },
   {
