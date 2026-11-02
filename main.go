@@ -5,7 +5,6 @@ import (
 	"io/fs"
 	"lan/flags"
 	"lan/languages"
-	"lan/lib"
 	"lan/scanner"
 	"log"
 	"path/filepath"
@@ -37,21 +36,6 @@ func scanDir(root string) ([]string, error) {
 	return files, err
 }
 
-func isIgnored(path string, ignored []string) (bool, error) {
-	for _, pathIgnored := range ignored {
-		is, err := lib.IsSubPath(pathIgnored, path)
-		if err != nil {
-			return false, err
-		}
-
-		if is {
-			return true, nil
-		}
-	}
-
-	return false, nil
-}
-
 func main() {
 	fl, err := flags.Init()
 	if err != nil {
@@ -80,7 +64,7 @@ func main() {
 
 	for _, path := range files {
 		// check if path goes into the exluded directory
-		ignore, err := isIgnored(path, fl.Ignore)
+		ignore, err := isSubpathL(path, fl.Ignore)
 		if err != nil {
 			log.Fatalf("Error: %s\n", err)
 		}

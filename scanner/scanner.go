@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"cmp"
+	"fmt"
 	"lan/languages"
 	"path/filepath"
 	"slices"
@@ -24,9 +25,14 @@ func NewScanner(lds []languages.LanguageDefinition) Scanner {
 	}
 }
 
-// Finds language entry that matches specified filename. If no entry was
+// Finds language entry that matches specified filename/path. If no entry was
 // found, returns [languages.ErrNotSupported] error.
-func (s Scanner) Find(name string) (*Entry, error) {
+func (s Scanner) Find(path string) (*Entry, error) {
+	name := filepath.Base(path)
+	if name == "." {
+		return nil, fmt.Errorf("path is empty")
+	}
+
 	for _, e := range s.Entries {
 		for _, match := range e.Matches {
 			matched, err := filepath.Match(match, name)
@@ -44,7 +50,7 @@ func (s Scanner) Find(name string) (*Entry, error) {
 
 // Checks if source file is supported, and if it is, scans it.
 func (s Scanner) Scan(path string) error {
-	e, err := s.Find(filepath.Base(path))
+	e, err := s.Find(path)
 	if err != nil {
 		// skip if language is not supported
 		if err == languages.ErrNotSupported {

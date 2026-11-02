@@ -1,11 +1,11 @@
-package lib
+package main
 
 import (
 	"path/filepath"
 	"strings"
 )
 
-func IsSubPath(parent, child string) (bool, error) {
+func isSubpath(parent, child string) (bool, error) {
 	p, err := filepath.Abs(parent)
 	if err != nil {
 		return false, err
@@ -25,4 +25,20 @@ func IsSubPath(parent, child string) (bool, error) {
 	// paths (".") or child path is not a subpath of the parent ("..",
 	// "../..", etc.)
 	return !strings.HasPrefix(rel, "."), nil
+}
+
+// Checks if provided path is subpath of any of the paths from list.
+func isSubpathL(path string, l []string) (bool, error) {
+	for _, lpath := range l {
+		is, err := isSubpath(lpath, path)
+		if err != nil {
+			return false, err
+		}
+
+		if is {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
